@@ -1,17 +1,13 @@
-# Используем стабильный Python
-FROM python:3.10-slim
+FROM python:3.10
 
-# Рабочая папка
 WORKDIR /app
 
-# Копируем файлы
 COPY . .
 
-# Устанавливаем зависимости
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
-# Открываем порт
+RUN playwright install chromium
+
 EXPOSE 10000
 
-# Запуск приложения (ТОЛЬКО сайт, без бота)
-CMD ["python", "app.py"]
+CMD ["python","app.py"]
