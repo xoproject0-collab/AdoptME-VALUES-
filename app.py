@@ -1,10 +1,7 @@
 from flask import Flask, jsonify, send_file, request
 import json
 import uuid
-import asyncio
 import os
-from apscheduler.schedulers.background import BackgroundScheduler
-from parser import parse
 
 app = Flask(__name__)
 
@@ -59,35 +56,13 @@ def top_trades():
     return jsonify(trades[:10])
 
 # ------------------------
-# 🔥 Парсер (каждые 5 минут)
-# ------------------------
-
-def run_parser():
-    try:
-        asyncio.run(parse())
-        print("✅ Парсер обновил данные")
-    except Exception as e:
-        print("❌ Ошибка парсера:", e)
-
-scheduler = BackgroundScheduler()
-scheduler.add_job(run_parser, "interval", minutes=5)
-
-# ------------------------
-# 🚀 Запуск
+# 🚀 ЗАПУСК (БЕЗ ПАРСЕРА)
 # ------------------------
 
 if __name__ == "__main__":
-    print("🚀 Запуск приложения...")
+    print("🚀 Сервер запускается...")
 
-    # первый запуск парсера
-    run_parser()
-
-    # запуск планировщика
-    scheduler.start()
-    scheduler.print_jobs()
-
-    # ВАЖНО ДЛЯ RENDER
     port = int(os.environ.get("PORT", 10000))
-    print(f"🌐 Запуск сервера на порту {port}")
+    print(f"🌐 Порт: {port}")
 
     app.run(host="0.0.0.0", port=port)
