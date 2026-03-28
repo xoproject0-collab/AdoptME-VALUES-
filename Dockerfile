@@ -1,11 +1,17 @@
-FROM python:3.10
+# Используем стабильный Python
+FROM python:3.10-slim
 
+# Рабочая папка
 WORKDIR /app
 
+# Копируем файлы
 COPY . .
 
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
-RUN playwright install
+# Устанавливаем зависимости
+RUN pip install --no-cache-dir -r requirements.txt
 
-CMD sh -c python app.py
+# Открываем порт
+EXPOSE 10000
+
+# Запуск приложения (ТОЛЬКО сайт, без бота)
+CMD ["python", "app.py"]
