@@ -1,43 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Adopt Me Trade</title>
+
+<style>
+
+body{
+background:#111;
+color:white;
+font-family:sans-serif;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:20px;
+}
+
+.pet{
+border:1px solid #444;
+padding:10px;
+margin:5px;
+border-radius:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Pet Values</h2>
+
+<input id="search" placeholder="Search pet">
+
+<div id="pets"></div>
+
 <script>
-let pets = []
 
-document.addEventListener("DOMContentLoaded", async () => {
+let pets=[]
 
-    async function loadPets() {
-        const res = await fetch("/pets");
-        pets = await res.json();
-        renderPets(pets);
-    }
+async function loadPets(){
 
-    function renderPets(list) {
-        const container = document.getElementById("pets");
-        container.innerHTML = "";
+const res = await fetch("/pets")
 
-        list.slice(0, 50).forEach(p => {
-            const div = document.createElement("div");
-            div.innerHTML = `
-                <div style="padding:10px;border:1px solid #444;margin:5px;border-radius:10px">
-                    🐾 ${p.name} — 💎 ${p.value}
-                </div>
-            `;
-            container.appendChild(div);
-        });
-    }
+pets = await res.json()
 
-    function searchPets(text) {
-        const filtered = pets.filter(p =>
-            p.name.toLowerCase().includes(text.toLowerCase())
-        );
-        renderPets(filtered);
-    }
+renderPets(pets)
 
-    // 🔥 теперь точно найдёт input
-    const input = document.getElementById("search");
+}
 
-    input.addEventListener("input", (e) => {
-        searchPets(e.target.value);
-    });
+function renderPets(list){
 
-    await loadPets();
-});
+const container=document.getElementById("pets")
+
+container.innerHTML=""
+
+list.slice(0,100).forEach(p=>{
+
+const div=document.createElement("div")
+
+div.className="pet"
+
+div.innerHTML="🐾 "+p.name+" — 💎 "+p.value
+
+container.appendChild(div)
+
+})
+
+}
+
+document.getElementById("search").addEventListener("input",(e)=>{
+
+const text=e.target.value.toLowerCase()
+
+const filtered=pets.filter(p=>p.name.toLowerCase().includes(text))
+
+renderPets(filtered)
+
+})
+
+loadPets()
+
 </script>
+
+</body>
+
+</html>
