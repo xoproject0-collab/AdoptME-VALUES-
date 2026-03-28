@@ -1,1 +1,8 @@
-[]
+[
+  {"name":"Shadow Dragon","value":10},
+  {"name":"Frost Dragon","value":8},
+  {"name":"Parrot","value":7},
+  {"name":"Owl","value":6},
+  {"name":"Crow","value":5},
+  {"name":"Kangaroo","value":2}
+]
