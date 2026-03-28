@@ -1,91 +1,80 @@
-<!DOCTYPE html>
-<html>
-
-<head>
-
-<title>Adopt Me Trade</title>
-
-<style>
-
-body{
-background:#111;
-color:white;
-font-family:sans-serif;
-}
-
-input{
-width:100%;
-padding:10px;
-margin-bottom:20px;
-}
-
-.pet{
-border:1px solid #444;
-padding:10px;
-margin:5px;
-border-radius:10px;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<h2>Pet Values</h2>
-
-<input id="search" placeholder="Search pet">
-
+<input type="text" id="search" placeholder="Search pet / Поиск питомца" style="width:100%;padding:10px;margin-bottom:10px"/>
+<select id="lang"><option value="RU">RU</option><option value="EN">EN</option></select>
 <div id="pets"></div>
+<div id="left"><h3>Left / Левая сторона</h3></div>
+<div id="right"><h3>Right / Правая сторона</h3></div>
+<button id="calc">Calculate WFL / Посчитать</button>
+<div id="result"></div>
+
+<h3>AI Trade Advisor / Советник по трейду</h3>
+<input type="file" id="fileLeft" accept="image/*"/>
+<input type="file" id="fileRight" accept="image/*"/>
+<button id="aiBtn">Анализировать / Analyze</button>
+<div id="aiResult"></div>
 
 <script>
+let pets=[], left=[], right=[], lang='RU'
 
-let pets=[]
+document.getElementById("lang").addEventListener("change",(e)=>{lang=e.target.value})
 
 async function loadPets(){
-
-const res = await fetch("/pets")
-
-pets = await res.json()
-
-renderPets(pets)
-
+    const res=await fetch("/pets")
+    pets=await res.json()
+    renderPets(pets)
 }
 
 function renderPets(list){
-
-const container=document.getElementById("pets")
-
-container.innerHTML=""
-
-list.slice(0,100).forEach(p=>{
-
-const div=document.createElement("div")
-
-div.className="pet"
-
-div.innerHTML="🐾 "+p.name+" — 💎 "+p.value
-
-container.appendChild(div)
-
-})
-
+    const container=document.getElementById("pets")
+    container.innerHTML=""
+    list.forEach(p=>{
+        const div=document.createElement("div")
+        div.style.cssText="padding:5px;border:1px solid #444;margin:3px;border-radius:5px;cursor:pointer"
+        div.innerHTML=`${p.name} — ${p.value}`
+        div.onclick=()=>{addPet(p.name)}
+        container.appendChild(div)
+    })
 }
 
+function addPet(name){
+    if(left.length<=right.length) left.push(name)
+    else right.push(name)
+    renderSelection()
+}
+
+function renderSelection(){
+    document.getElementById("left").innerHTML="<h3>Left / Левая сторона</h3>"+left.join(", ")
+    document.getElementById("right").innerHTML="<h3>Right / Правая сторона</h3>"+right.join(", ")
+}
+
+document.getElementById("calc").addEventListener("click",async ()=>{
+    const res=await fetch("/calc",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({left,right})})
+    const data=await res.json()
+    document.getElementById("result").innerHTML=lang=='RU'?`Результат: ${data.result}`:`Result: ${data.result}`
+})
+
+// AI анализ
+document.getElementById("aiBtn").addEventListener("click",async ()=>{
+    const leftFile=document.getElementById("fileLeft").files[0]
+    const rightFile=document.getElementById("fileRight").files[0]
+    if(!leftFile || !rightFile){ alert("Загрузите обе фотографии"); return }
+
+    const formData=new FormData()
+    formData.append("left",leftFile)
+    formData.append("right",rightFile)
+
+    const res=await fetch("/ai_trade",{method:"POST",body:formData})
+    const data=await res.json()
+    document.getElementById("aiResult").innerHTML=`
+        <b>Левая сторона:</b> ${data.left_names.join(", ")}<br>
+        <b>Правая сторона:</b> ${data.right_names.join(", ")}<br>
+        <b>Совет AI:</b> ${data.advice}
+    `
+})
+
 document.getElementById("search").addEventListener("input",(e)=>{
-
-const text=e.target.value.toLowerCase()
-
-const filtered=pets.filter(p=>p.name.toLowerCase().includes(text))
-
-renderPets(filtered)
-
+    const text=e.target.value.toLowerCase()
+    renderPets(pets.filter(p=>p.name.toLowerCase().includes(text)))
 })
 
 loadPets()
-
 </script>
-
-</body>
-
-</html>
