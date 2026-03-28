@@ -6,8 +6,8 @@ async def parse():
         browser = await p.chromium.launch(headless=True)
         page = await browser.new_page()
         await page.goto("https://elvebredd.com/adopt-me-calculator")
-        
-        # Скроллим, чтобы загрузить все карточки
+
+        # Скроллим чтобы загрузить все питомцы
         for _ in range(30):
             await page.mouse.wheel(0, 10000)
             await page.wait_for_timeout(1000)
@@ -26,9 +26,10 @@ async def parse():
         """)
 
         await browser.close()
+
         unique = {p["name"]: p for p in pets}
 
         with open("pets.json", "w") as f:
             json.dump(list(unique.values()), f, indent=2)
 
-        print(f"✅ Обновлено {len(unique)} питомцев")
+        print("✅ pets updated:", len(unique))
