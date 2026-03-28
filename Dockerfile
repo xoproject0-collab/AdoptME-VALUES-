@@ -1,8 +1,9 @@
 # -------------------------------
-# Dockerfile для полного проекта
+# Полный Dockerfile для проекта
+# Включает OpenCV, Playwright, Flask и Telegram Bot
 # -------------------------------
 
-# Используем стабильный Python
+# Базовый образ Python
 FROM python:3.10-slim
 
 # Рабочая папка
@@ -27,15 +28,16 @@ RUN apt-get update && apt-get install -y \
     libxrandr2 \
     libgbm1 \
     libasound2 \
-    libgl1-mesa-glx \
+    libgl1 \
     ffmpeg \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Устанавливаем Playwright Chromium
+# Устанавливаем Chromium для Playwright
 RUN playwright install chromium
 
-# Открываем порт для Flask
+# Открываем порт Flask
 EXPOSE 10000
 
-# Запуск приложения (Flask + бот + parser)
+# Запуск приложения (Flask + Telegram бот + Parser + AI)
 CMD ["python", "app.py"]
