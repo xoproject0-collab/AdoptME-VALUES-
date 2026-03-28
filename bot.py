@@ -9,39 +9,26 @@ APP_URL = os.getenv("APP_URL")
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
+async def on_startup(dp):
+    print("🚀 Бот запускается")
+    await bot.delete_webhook(drop_pending_updates=True)
 
 def webapp():
-
     kb = InlineKeyboardMarkup()
-
     kb.add(
-
         InlineKeyboardButton(
-
-            "Open App",
-
+            "📱 Открыть приложение",
             web_app=WebAppInfo(url=APP_URL)
-
         )
-
     )
-
     return kb
 
-
 @dp.message_handler(commands=['start'])
-
 async def start(msg: types.Message):
-
     await msg.answer(
-
-        "Open trade app",
-
+        "🚀 Добро пожаловать!\nНажми кнопку ниже, чтобы открыть трейд-приложение 👇",
         reply_markup=webapp()
-
     )
 
-
 if __name__ == "__main__":
-
-    executor.start_polling(dp)
+    executor.start_polling(dp, on_startup=on_startup)
