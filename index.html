@@ -1,40 +1,43 @@
 <script>
 let pets = []
 
-async function loadPets() {
-    const res = await fetch("/pets");
-    pets = await res.json();
+document.addEventListener("DOMContentLoaded", async () => {
 
-    renderPets(pets);
-}
+    async function loadPets() {
+        const res = await fetch("/pets");
+        pets = await res.json();
+        renderPets(pets);
+    }
 
-function renderPets(list) {
-    const container = document.getElementById("pets");
-    container.innerHTML = "";
+    function renderPets(list) {
+        const container = document.getElementById("pets");
+        container.innerHTML = "";
 
-    list.slice(0, 50).forEach(p => {
-        const div = document.createElement("div");
-        div.innerHTML = `
-            <div style="padding:10px;border:1px solid #444;margin:5px;border-radius:10px">
-                🐾 ${p.name} — 💎 ${p.value}
-            </div>
-        `;
-        container.appendChild(div);
+        list.slice(0, 50).forEach(p => {
+            const div = document.createElement("div");
+            div.innerHTML = `
+                <div style="padding:10px;border:1px solid #444;margin:5px;border-radius:10px">
+                    🐾 ${p.name} — 💎 ${p.value}
+                </div>
+            `;
+            container.appendChild(div);
+        });
+    }
+
+    function searchPets(text) {
+        const filtered = pets.filter(p =>
+            p.name.toLowerCase().includes(text.toLowerCase())
+        );
+        renderPets(filtered);
+    }
+
+    // 🔥 теперь точно найдёт input
+    const input = document.getElementById("search");
+
+    input.addEventListener("input", (e) => {
+        searchPets(e.target.value);
     });
-}
 
-function searchPets(text) {
-    const filtered = pets.filter(p =>
-        p.name.toLowerCase().includes(text.toLowerCase())
-    );
-
-    renderPets(filtered);
-}
-
-// 🔥 СЛУШАЕМ ВВОД
-document.getElementById("search").addEventListener("input", (e) => {
-    searchPets(e.target.value);
+    await loadPets();
 });
-
-loadPets();
 </script>
